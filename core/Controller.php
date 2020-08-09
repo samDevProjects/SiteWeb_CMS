@@ -9,8 +9,10 @@ class Controller{
     /**
      * Initialize the request with all its parameters (controller, action and params)
      */
-    function __construct($request){
-        $this->request = $request;
+    function __construct($request = null){
+        if($request){
+            $this->request = $request;
+        }
     }
 
     /**
@@ -69,5 +71,15 @@ class Controller{
         $this->set('message', $message);
         $this->render(DS.'errors'.DS.'404');
         die();
+    }
+
+    /**
+     * Allows to call a controller from a view
+     */
+    function request($controller, $action){
+        $controller .= 'Controller';
+        require_once ROOT.DS.'controller'.DS.$controller.'.php';
+        $c = new $controller;
+        return $c->$action;
     }
 }
