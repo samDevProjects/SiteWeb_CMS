@@ -3,13 +3,26 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title></title>
+    <title><?php echo isset($title_for_layout)?$title_for_layout:'My CMS website';?></title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/cover/">
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
-  <body class="">
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <h3><a class="navbar-brand" href="#">My CMS Webstie</a></h3>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+        <?php foreach ($pages as $p): ?>
+          <li class="nav-item active">
+            <a class="nav-link" href="<?php echo BASE_URL.'/pages/view/'.$p->id; ?>" title="<?php echo $p->name; ?>"><?php echo $p->name; ?></a>
+          </li>
+        <?php endforeach; ?>
+        </ul>
+      </div>
+    </nav>
 
     <div class="container">
         <?php echo $content_for_layout; ?>

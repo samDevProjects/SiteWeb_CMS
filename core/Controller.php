@@ -46,4 +46,28 @@ class Controller{
             $this->vars[$key] = $value;
         }
     }
+
+    /**
+     * Allows charging a model
+     */
+    function loadModel($name){
+        $file = ROOT.DS.'model'.DS.$name.'.php';
+        require_once($file);
+        //to avoid charging twice the object
+        if (!isset($this->$name)) {
+            $this->$name = new $name();
+        }else {
+            echo "Not charged";
+        }
+    }
+
+    /**
+     * Allows managing errors
+     */
+    function e404($message){
+        header("HTTP/1.0 404 Not Found");
+        $this->set('message', $message);
+        $this->render(DS.'errors'.DS.'404');
+        die();
+    }
 }
