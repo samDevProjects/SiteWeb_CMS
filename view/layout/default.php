@@ -8,18 +8,25 @@
     <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/cover/">
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-
+  </head>
 
   <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <h3><a class="navbar-brand" href="#">My CMS Webstie</a></h3>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-        <?php foreach ($pages as $p): ?>
-          <li class="nav-item active">
+        <?php $pagesMenu = $this->request('Pages', 'getMenu'); ?>
+        <?php foreach ($pagesMenu as $p): ?>
+          <li class="nav-item">
             <a class="nav-link" href="<?php echo BASE_URL.'/pages/view/'.$p->id; ?>" title="<?php echo $p->name; ?>"><?php echo $p->name; ?></a>
           </li>
         <?php endforeach; ?>
+          <li>
+            <a class="nav-link" href="<?php echo BASE_URL.'/posts'; ?>">Actualité</a>
+          </li>
         </ul>
       </div>
     </nav>

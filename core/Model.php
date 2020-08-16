@@ -5,8 +5,15 @@ class Model{
     public $conf = 'default';
     public $table = false;
     public $db;
+    public $primaryKey = 'id';
 
     public function __construct(){
+        // I initialize variables for the sub-model "Post"
+        // this condition will transform "Post" to "posts"
+        //if($this->table === false){
+            $this->table = strtolower(get_class($this)).'s';
+        //}
+        //echo $this->table;die();
         // I charge and connect to the database
         $conf = Conf::$database[$this->conf];
         if (isset(Model::$connections[$this->conf])) {
@@ -28,17 +35,23 @@ class Model{
                 die('Impossible de se connecter à la base de donnée');
             }
         }
-        // I initialize variables for the sub-model "Post"
-        // this condition will transform "Post" to "posts"
-        //if($this->table === false){
-            $this->table = strtolower(get_class($this)).'s';
-        //}
-        //print_r($this->table);die();
+        
     }
 
     public function find($req){
-        $sql = 'SELECT * FROM '.$this->table.' as '.get_class($this).' ';
-        //condition construction
+        $sql = 'SELECT ';
+        //checking if there are any fields to add to our sql request
+        if(isset($req['fields'])){
+            if (is_array($req['fields'])) {
+                $sql .= implode(', ', $req['fields']);
+            }else {
+                $sql .= $req['fields'];
+            }
+        }else {
+            $sql .= '*';
+        }
+        $sql .= ' FROM '.$this->table.' as '.get_class($this).' ';
+        //checking if there are any conditions to add to our sql request
         if(isset($req['conditions'])){
             $sql .= 'WHERE ';
             if (!is_array($req['conditions'])) {
@@ -48,11 +61,16 @@ class Model{
                 foreach ($req['conditions'] as $key => $value) {
                     if (!is_numeric($value)) {
                         $value = $this->db->quote($value);
-                    } 
+                    }
+                    //key and value are defined in conditions in the PostController
                     $cond[] = "$key=$value";
                 }
                 $sql .= implode(' AND ', $cond);
             }
+        }
+        //checking if there is a limitation of data number
+        if (isset($req['limit'])) {
+            $sql .= 'LIMIT '.$req['limit'];
         }
         $pre = $this->db->prepare($sql);
         $pre->execute();
@@ -63,5 +81,13 @@ class Model{
     */
     public function findFirst($req){
         return current($this->find($req));
+    }
+
+    public function findCount($conditions){
+        $res = $this->findFirst(array(
+            'fields' => 'COUNT(id) as count',
+            'conditions' => $conditions
+        ));
+        return $res->count;
     }
 }

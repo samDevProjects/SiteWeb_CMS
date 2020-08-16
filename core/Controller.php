@@ -14,7 +14,6 @@ class Controller{
             $this->request = $request;
         }
     }
-
     /**
      * Allows rendering views by the controller
      * @param $view the index page
@@ -24,12 +23,12 @@ class Controller{
             return false;
         }
         extract($this->vars);
+        //to handle errors and to have the possibility to render an action starting by a DS('/')
         if (strpos($view, DS) === 0) {
             $view = ROOT.DS.'view'.$view.'.php';
         }else {
             $view = ROOT.DS.'view'.DS.$this->request->controller.DS.$view.'.php';
         }
-        
         ob_start();
         require($view);
         $content_for_layout = ob_get_clean();
@@ -48,7 +47,6 @@ class Controller{
             $this->vars[$key] = $value;
         }
     }
-
     /**
      * Allows charging a model
      */
@@ -62,7 +60,6 @@ class Controller{
             echo "Not charged";
         }
     }
-
     /**
      * Allows managing errors
      */
@@ -72,7 +69,6 @@ class Controller{
         $this->render(DS.'errors'.DS.'404');
         die();
     }
-
     /**
      * Allows to call a controller from a view
      */
@@ -80,6 +76,6 @@ class Controller{
         $controller .= 'Controller';
         require_once ROOT.DS.'controller'.DS.$controller.'.php';
         $c = new $controller;
-        return $c->$action;
+        return $c->$action();
     }
 }
