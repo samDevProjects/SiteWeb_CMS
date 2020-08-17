@@ -45,7 +45,6 @@ class Router {
             }
         }
         return $url;
-        //this is master branch
     }
 
 }
