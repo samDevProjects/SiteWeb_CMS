@@ -8,7 +8,7 @@
 <?php foreach ($posts as $key => $value): ?>
     <h2><?php echo $value->name;  ?></h2>
     <?php echo $value->content; ?>
-    <p><a href="<?php echo BASE_URL.'/posts/view/'.$value->id; ?>">Read more &rarr;</a></p>
+    <p><a href="<?php echo Router::url("posts/view/id:{$value->id}/slug:$value->slug"); ?>">Read more &rarr;</a></p>
 <?php endforeach; ?>
 
 <nav aria-label="Page navigation example">
