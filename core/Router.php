@@ -10,6 +10,23 @@ class Router {
      */
     static function parse($url, $request) {
         $url = trim($url, '/');
+        //This part is reserved for the conversion of the routing system
+        //so if we detect any changement in the url, and if it matches the
+        //rules defined in the connection function then we do the conversion
+        //and we inject the new values for the controller, action and params
+        
+        foreach(self::$routes as $value){
+            if(preg_match($value['catcher'], $url, $match)){
+                $request->controller = $value['controller'];
+                $request->action = $value['action'];
+                $request->params = array();
+                foreach ($value['params'] as $k => $v) {
+                    $request->params[$k] = $match[$k];
+                    return $request;
+                }
+            }
+        }
+
         $params = explode('/', $url);
         $request->controller = $params[0];
         $request->action = isset($params[1]) ? $params[1] : 'index';
@@ -26,6 +43,25 @@ class Router {
         $r['redirect'] = $redirect;
         $r['origin'] = '/'.$url.'/';
         $r['origin'] = preg_replace('/([0-9a-z]+):([^\/])'.'/','${1}:(?P<$1>${2})',$r['origin']);
+        //this part is to prepare the customized url for the conversion in the parsing function above
+        $params = explode('\/', $url);
+        foreach ($params as $key => $value) {
+            if(strpos($value, ':')){
+                $p = explode(':', $value);
+                $r['params'][$p[0]] = $p[1];
+            }else {
+                if($key === 0){
+                    $r['controller'] = $value;
+                }elseif($key === 1){
+                    $r['action'] = $value;
+                }
+            }
+        }
+        $r['catcher'] = $redirect;
+        foreach ($r['params'] as $key => $value) {
+            $r['catcher'] = str_replace(":$key", "(?P<$key>$value)", $r['catcher']);
+        }
+        $r['catcher'] = '/'.str_replace('/', '\/', $r['catcher']).'/';
         self::$routes[] = $r;
     }
     /**
